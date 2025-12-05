@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Survey – AGU 2025</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --orange: #d73f09;
+            --orange-soft: #ffb36a;
+            --bg: #f8f8f8;
+            --card: #ffffff;
+            --shadow-soft: -10px -10px 15px rgba(255, 255, 255, 0.6),
+                           10px 10px 20px rgba(70, 70, 70, 0.18);
+            --shadow-inset: inset -5px -5px 9px rgba(255, 255, 255, 0.6),
+                            inset 5px 5px 9px rgba(94, 104, 121, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: "TikTok Sans";
+            src: url("Assets/TikTokSans.ttf") format("truetype");
+            font-weight: 300 900;
+            font-display: swap;
+        }
+
+        body {
+            background-color: var(--bg);
+            display: flex;
+            justify-content: stretch;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            margin: 0;
+            font-family: "TikTok Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            flex-direction: column;
+        }
+
+        /* Top left labels */
+        h1 {
+            color: #00000030;
+            font-weight: 900;
+            font-size: 1.25rem;
+            margin: 0;
+            rotate: -90deg;
+            position: absolute;
+            top: 40px;
+            left: -20px;
+            pointer-events: none;
+        }
+
+        h2.main-title {
+            color: #000;
+            font-weight: 300;
+            font-size: 3rem;
+            margin: 0;
+            border-left: 1px solid #000;
+            padding-left: 1rem;
+            position: absolute;
+            left: 50px;
+            top: 0;
+            line-height: 1.1;
+            pointer-events: none;
+        }
+
+        .form-container {
+            height: 80%;
+            width: 90%;
+            max-width: 100%;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-inner {
+            width: 100%;
+            max-width: 100%;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .question-label {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #222;
+            text-shadow: -5px 5px 15px #00000029;
+            margin-bottom: 30px;
+            width:60%;
+        }
+
+        form#questionForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position:relative;
+        }
+
+        fieldset.text-box {
+            width: 100%;
+            border: 0;
+            margin: 0;
+            padding: 0;
+        }
+        .email-glow-wrap, .email-glow-wrap:hover{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50px;
+            padding: 2px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+     /*   .glow-wrap, .glow-wrap:hover {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            padding: 2px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }*/
+
+        .email-glow-wrap:focus-within, .email-glow-wrap:hover {
+            position: relative;
+            background: #d73f09;
+            background-size: 300% 300%;
+            animation: moveGradient 4s ease infinite;
+        }
+
+        .email-glow-wrap input {
+            width: 100%;
+            max-width: 600px;
+            width: 600px;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            outline: none;
+            background: #fff;
+            font-size: 1rem;
+            font-family: "TikTok Sans", sans-serif;
+        }
+
+        .email-glow-wrap::placeholder {
+            font-size: 1rem;
+            color: #999;
+        }
+
+        .email-glow-wrap:focus-within input{
+            box-shadow: var(--shadow-inset);
+        }
+
+        .email-glow-wrap:focus-within::after, .email-glow-wrap:hover::after{
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: inherit;
+            filter: blur(10px);
+            z-index: -1;
+            animation: moveGradient 6s ease infinite;
+            background-size: 300% 300%;
+        }
+
+
+        /* Neumorphic radio group */
+        .radio-group {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            border-radius: 5px;
+            border: 2px solid #00000017;
+            background: #f6f6f6;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            min-width: 100px;
+            justify-content: center;
+            height: 200px;
+            width: 200px;
+            flex-direction: column;
+        }
+
+        .radio-option:hover{
+            border: 0;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-bullet {
+            width: 0;
+            height: 0;
+            border-radius: 999px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .radio-bullet::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: inherit;
+            background: transparent;
+            transition: background 0.2s ease;
+        }
+
+        .radio-label-text {
+            font-size: 0.98rem;
+            color: #222;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .radio-option.selected {
+            background: #ffffff;
+            box-shadow: var(--shadow-inset);
+        }
+
+        .radio-option.selected .radio-bullet {
+            border-color: #d73f09;
+        }
+
+        .radio-option.selected .radio-bullet::after {
+            background: #d73f09;
+        }
+
+        #closeModal{
+            height: 50px;
+        }
+
+        .button {
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s;
+        border-radius: 100px;
+        background: #333;
+        color:white;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        justify-content: center;
+        width: 150px;
+        }
+
+        .email-button{
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+            border-radius: 100px;
+            background: #333;
+            color: white;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        .button:hover {
+        background: #d73f09;
+        }
+
+        .button > svg {
+        width: 34px;
+        margin-left: 10px;
+        transition: transform 0.3s ease-in-out;
+        }
+
+        .button:hover svg {
+        transform: translateX(5px);
+        }
+
+        .button:active {
+        transform: scale(0.95);
+        }
+
+        #noThanksBtn, #emailBackBtn{
+        background-color: #d3d3d3 !important;
+        color: #333 !important;
+        }
+
+        #emailBackBtn{
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* YOU WIN state */
+        #youWin {
+            display: none;
+        }
+
+        #youWin.show {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .win-title {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--orange);
+            text-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+
+        .win-subtitle {
+            font-size: 1.1rem;
+            color: #444;
+            max-width: 480px;
+            z-index: 999;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        /* Confetti canvas */
+        #confettiCanvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Spinner wheel 2 */
+        #spinnerWheel2 {
+            position: absolute;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-top: 75px;
+        }
+
+        #spinnerWheel2.show {
+            display: flex;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .spin-button {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            border-radius: 50% 0 50% 50%;
+            rotate: 315deg;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 2rem;
+            color: #333;
+            border: 5px solid #333;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        .spin-button p{
+            rotate: 45deg;
+        }
+
+        .spin-button:hover:not(.spinning) {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-button:active:not(.spinning) {
+            transform: scale(0.95);
+        }
+
+        .spin-button.spinning {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+   /*     .spin-button::before {
+            content: '';
+            position: absolute;
+            top: -35px;
+            width: 25px;
+            height: 35px;
+            background: #333;
+            clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+        }*/
+
+        .wheel {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+
+            background: conic-gradient(
+                #d73f09 0deg 72deg,
+                #4A773C 72deg 144deg,
+                #003B5C 144deg 216deg,
+                #f7a162 216deg 288deg,
+                #D3832B 288deg 360deg
+            );
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0% 0%;
+            transform: rotate(calc(72deg * var(--i)));
+            font-size: 2rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .wheel-segment::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -100%;
+            left: -100%;
+            background: inherit;
+            transform: skewY(18deg) rotate(calc(-72deg * var(--i)));
+        }
+
+        .wheel-segment span {
+            position: absolute;
+            top: -10px;
+            left: 30%;
+            transform: rotate(calc(-72deg * var(--i)));
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .prize-display {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--orange);
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.primary {
+            background: var(--orange);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: white;
+            color: #000;
+            border: 1px solid #000;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .form-container {
+                width: 94%;
+                height: auto;
+                padding: 30px 20px;
+                margin-top:50px;
+            }
+
+            .form-inner {
+                max-width: 100%;
+            }
+
+          /*  .glow-wrap input,*/
+            .radio-group {
+                max-width: 100%;
+            }
+
+            .wheel-wrapper{
+                top:300px;
+            }
+        }
+
+        /* Radio Glow */
+    /*    .radio-glow {
+            padding: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-glow:hover{
+                        position: relative;
+            background: linear-gradient(120deg,
+                #ff8a00,
+                var(--orange),
+                var(--orange-soft),
+                #ff8a00
+            );
+            background-size: 300% 300%;
+            animation: moveGradient 4s ease infinite;
+        }*/
+
+        /* Apply glowing animated border when selected */
+       /* .radio-glow.glow-active {
+            position: relative;
+            background: linear-gradient(120deg,
+                #ff8a00,
+                var(--orange),
+                var(--orange-soft),
+                #ff8a00
+            );
+            background-size: 300% 300%;
+            animation: moveGradient 4s ease infinite;
+        }
+
+        .radio-glow.glow-active::after {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border-radius: inherit;
+            background: radial-gradient(circle, rgba(215,63,9,0.4), transparent 70%);
+            filter: blur(10px);
+            z-index: -1;
+            animation: moveGradient 6s ease infinite;
+            background-size: 300% 300%;
+        }*/
+
+        #backButton {
+            border: 0;
+            background-color: #ffffff00;
+            font-size: 1rem;
+            color: #33333359;
+            cursor: pointer;
+            font-family: "TikTok Sans", sans-serif;
+            font-weight: 100;
+            margin-right: auto;
+        }
+
+        .arrow-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            padding: 7px 10px;
+            background: var(--orange);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            transition: 0.2s;
+        }
+
+        .arrow-btn:hover {
+            background: #ff8a00;
+            transform: scale(1.05);
+        }
+
+        .transition-wrapper {
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            transform-origin: center center;
+        }
+
+        .shrink-out {
+            transform: scale(0.85);
+            opacity: 0;
+        }
+
+        .grow-in {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .pre-grow {
+            transform: scale(0.85);
+            opacity: 0;
+        }
+
+        #emailField{
+            position: relative;
+        }
+
+        @media (max-width: 625px) {
+            .email-glow-wrap{
+                width: 400px;
+            }
+        }
+
+        .buttons-flex{
+            display:flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .radio-icon{
+            width: 100px;
+            flex-basis: 100%;
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .top-nav{
+            width: 100%;
+            height:100px;
+            background-color: #d73f09;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .top-nav img{    
+            height: 80px;
+            max-height: 80px;
+            padding-left: 20px;
+        }
+
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        .checkbox-tile{
+            cursor: pointer;
+        }
+
+        .checkbox-tile img{
+            height: 300px;
+            width: auto;
+        }
+
+        .form-inner.tall-content {
+            justify-content: flex-start;   /* disable centering */
+            padding-top: 80px;             /* pushes grid down below back button */
+        }
+
+        #submitButton{
+            margin-top: 20px;
+            margin-bottom: 100px;
+        }
+        
+        .checkbox-tile input[type="checkbox"]{
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-tile {
+            position: relative;
+            padding: 2px;
+        }
+        .checkbox-tile.selected .checkbox-checkmark {
+            background: #d73f09;
+            box-shadow: 0 0 12px rgba(215, 63, 9, 0.55);
+            color: white;
+        }
+
+        /* Outer gradient glow ON SELECT */
+        .checkbox-tile.selected img {
+            border: 4px solid #d73f09;
+            box-shadow: 0 0 12px rgba(215, 63, 9, 0.55);
+        }
+
+        .checkbox-tile:hover img{
+            box-shadow: 0 0 12px rgba(215, 63, 9, 0.55);
+        }
+        /* Hide the native checkbox */
+        .checkbox-tile input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .checkbox-checkmark {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-size: 22px;
+            font-weight: 900;
+            transition: all 0.25s ease;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+
+        .radio-glow.glow-active .radio-option, .radio-glow:hover .radio-option{
+            border: 2px solid #d73f09;
+            border-radius: 5px;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav"><img src="Assets/logo.png" id="homeLogo" style="cursor:pointer;"></div>
+    <button type="button"id="backButton">&#8617; Back to previous question</button>
+    <!-- Confetti -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Main container -->
+    <div class="form-container">
+        <div class="form-inner">
+            <!-- Question form (Round 1 + Round 2) -->
+            <div id="transitionWrapper" class="transition-wrapper">
+                <form id="questionForm">
+                    <div class="question-label" id="questionLabel"></div>
+                    <div id="radioContainer" class="radio-group hide"></div>
+                    <div id="emailField" class="hide">
+                        <div class="email-glow-wrap">
+                            <input type="email" id="emailInput" placeholder="Please enter your email">
+                        </div>
+
+                        <button id="emailSubmitBtn" type="button" class="email-button">
+                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
+                                margin: 0;"><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 74 74"
+                                height="35"
+                                width="35"
+                            >
+                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
+                                <path
+                                fill="white"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
+                                ></path>
+                            </svg></p>
+                        </button>
+                        <button id="emailBackBtn" type="button" class="button">
+                            <div class="wrap"><p>Back</p></div>
+                        </button>
+                        <div id="emailError"
+                            style="color:#d73f09; font-size:0.9rem; margin-top:8px; display:none;">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+
+                    <fieldset class="text-box">
+                        <div class="glow-wrap" id="glowWrap">
+                            <input type="text" id="questionInput" placeholder="Name">
+                        </div>
+                    </fieldset>
+
+                    <button class="button" id="submitButton" type="submit">
+                        <div class="wrap">
+                            <p>Next</p>
+                        </div>
+                    </button>
+                </form>
+            </div>
+            <!-- YOU WIN state (after Round 1) -->
+            <div id="youWin">
+                <div class="win-title">YOU WIN!</div>
+                <p class="win-subtitle">
+                    Thanks for visiting the Oregon State University booth.
+                    Tap below to continue to Round 2 and spin for more fun.
+                </p>
+                <div class="buttons-flex">
+                    <button class="button" id="noThanksBtn">
+                        <div class="wrap">
+                            <p>Close</p>
+                        </div>
+                    </button>
+
+                    <button class="button" id="goToRound2">
+                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
+                                margin: 0;"><span>Continue</span>  <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 74 74"
+                                height="35"
+                                width="35"
+                            >
+                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
+                                <path
+                                fill="white"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
+                                ></path>
+                            </svg></p>
+                    </button> 
+                </div>
+            </div>
+
+            <!-- Spinner Wheel for Round 2 -->
+            <div id="spinnerWheel2">
+                <div class="wheel-wrapper">
+                    <div class="spin-button" id="spinBtn2"><p>SPIN</p></div>
+                    <div class="wheel" id="wheelElement2">    
+
+                            <span style="--i:0;"class="wheel-segment"><p style="rotate: 110deg; top: 20px; left: 118px; position: absolute;">Beach Ball</p></span>
+                            <span style="--i:1"class="wheel-segment"><p style="rotate: 110deg; position: absolute; left: 120px; top: -10px;">Giant<br>Highlighter</p></span>
+                            <span style="--i:2"class="wheel-segment"><p style="rotate: 108deg; left: 135px; position: absolute; top: 5px;">Calendar</p></span>
+                            <span style="--i:3"class="wheel-segment"><p style="rotate: 105deg; position: absolute; left: 140px;">Sticker</p></span>
+                            <span style="--i:4"class="wheel-segment"><p style="position: absolute; rotate: 110deg; left: 130px; top: 10px;">Magnet</p></span>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Prize modal (Round 2) -->
+    <div class="modal-backdrop" id="prizeModal">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <div class="prize-display" id="prizeValue">1</div>
+            <p>You've won a <strong id="prizeLabel">1 prize</strong>!</p>
+            <div class="modal-buttons">
+                <button class="button" id="closeModal">Close</button>
+            </div>
+        </div>
+    </div>
+    <div class="image-attributions sr-only">
+        X by Skena Grafis from <a href="https://thenounproject.com/browse/icons/term/x/" target="_blank" title="X Icons">Noun Project</a> (CC BY 3.0)
+
+        Check Mark by saidatun from <a href="https://thenounproject.com/browse/icons/term/check-mark/" target="_blank" title="Check Mark Icons">Noun Project</a> (CC BY 3.0)
+
+        Happy by Barracuda from <a href="https://thenounproject.com/browse/icons/term/happy/" target="_blank" title="Happy Icons">Noun Project</a> (CC BY 3.0)
+
+        Smile by Barracuda from <a href="https://thenounproject.com/browse/icons/term/smile/" target="_blank" title="Smile Icons">Noun Project</a> (CC BY 3.0)
+
+        Neutral Face by Barracuda from <a href="https://thenounproject.com/browse/icons/term/neutral-face/" target="_blank" title="Neutral Face Icons">Noun Project</a> (CC BY 3.0)
+
+        book and lightbulb by Rahmad romadoni from <a href="https://thenounproject.com/browse/icons/term/book-and-lightbulb/" target="_blank" title="book and lightbulb Icons">Noun Project</a> (CC BY 3.0)
+
+        Books stack by insdesign86 from <a href="https://thenounproject.com/browse/icons/term/books-stack/" target="_blank" title="Books stack Icons">Noun Project</a> (CC BY 3.0)
+
+        Government Office by Faizal Aji Mualana from <a href="https://thenounproject.com/browse/icons/term/government-office/" target="_blank" title="Government Office Icons">Noun Project</a> (CC BY 3.0)
+
+        Puzzle Piece by ilCactusBlu from <a href="https://thenounproject.com/browse/icons/term/puzzle-piece/" target="_blank" title="Puzzle Piece Icons">Noun Project</a> (CC BY 3.0)
+
+        faculty by WEBTECHOPS LLP from <a href="https://thenounproject.com/browse/icons/term/faculty/" target="_blank" title="faculty Icons">Noun Project</a> (CC BY 3.0)
+
+        Research by Radhika Studio from <a href="https://thenounproject.com/browse/icons/term/research/" target="_blank" title="Research Icons">Noun Project</a> (CC BY 3.0)
+        Prize by agus raharjo from <a href="https://thenounproject.com/browse/icons/term/prize/" target="_blank" title="Prize Icons">Noun Project</a> (CC BY 3.0)
+        sticker by LUTFI GANI AL ACHMAD from <a href="https://thenounproject.com/browse/icons/term/sticker/" target="_blank" title="sticker Icons">Noun Project</a> (CC BY 3.0)
+
+        Research Institute by Mia Elysia from <a href="https://thenounproject.com/browse/icons/term/research-institute/" target="_blank" title="Research Institute Icons">Noun Project</a> (CC BY 3.0)
+        Ship Wheel by Andhika Pramanto from <a href="https://thenounproject.com/browse/icons/term/ship-wheel/" target="_blank" title="Ship Wheel Icons">Noun Project</a> (CC BY 3.0)
+        people by karina from <a href="https://thenounproject.com/browse/icons/term/people/" target="_blank" title="people Icons">Noun Project</a> (CC BY 3.0)
+    </div>
+
+<script>
+    /* -------------------------------
+       ELEMENT REFERENCES
+    --------------------------------*/
+    const questionLabel = document.getElementById("questionLabel");
+    const questionInput = document.getElementById("questionInput");
+    const questionForm = document.getElementById("questionForm");
+    const radioContainer = document.getElementById("radioContainer");
+    const youWinBlock = document.getElementById("youWin");
+    const formInner = document.querySelector(".form-inner");
+    const spinnerWheel2 = document.getElementById("spinnerWheel2");
+    const submitButton = document.getElementById("submitButton");
+    const backButton = document.getElementById("backButton");
+    const transitionWrapper = document.getElementById("transitionWrapper");
+    const emailFieldWrap = document.getElementById("emailField");
+    const emailInput = document.getElementById("emailInput");
+    const emailError = document.getElementById("emailError");
+    const emailSubmitBtn = document.getElementById("emailSubmitBtn");
+    const emailBackBtn = document.getElementById("emailBackBtn");
+    const prizeModal = document.getElementById("prizeModal");
+    const homeLogo = document.getElementById("homeLogo");
+
+    /* -------------------------------
+       SURVEY STATE
+    --------------------------------*/
+    let round = 1;
+    let qIndex = 0;
+    let isTransitioning = false;
+
+    // answers object is reused between runs but resetAll() clears it
+    const answers = {
+        role: "",
+        experience: "",
+        brought: "",
+        knownResearch: "",
+        email: ""   // ONLY set in emailSubmitBtn or when "No" is chosen
+    };
+
+    let history = []; // for back button
+
+    /* -------------------------------
+       QUESTIONS
+    --------------------------------*/
+    const round1Questions = [
+        {
+            label: "Which of the following best describes your role?",
+            options: [
+                "OSU Faculty",
+                "Undergraduate Student",
+                "Graduate Student",
+                "Government Office",
+                "Other"
+            ]
+        },
+        {
+            label: "Did your experience at this booth improve your impression of Oregon State University?",
+            options: [
+                "Neutral, no change of impression",
+                "Yes, somewhat improved",
+                "Yes, much improved"
+            ]
+        }
+    ];
+
+    const round2Questions = [
+        {
+            label: "What brought you to the booth?",
+            options: [
+                "Cool Swag",
+                "Interest in Researchers",
+                "Interest in Research Institutes and Centers",
+                "R/V Taani Simulator"
+            ]
+        },
+        {
+            label: "Which OSU research centers and institutes did you know about prior to visiting AGU? Please select all that apply.",
+            options: [
+                "Advanced Technology and Manufacturing Institute",
+                "Center for Oldest Ice Exploration",
+                "Center for Quantitative Life Sciences",
+                "Collaborative Robotics and Intelligent Systems Institute",
+                "Cooperative Institute for Marine Ecosystem and Resources Studies",                
+                "Food Innovation Center",
+                "Hatfield Marine Science Center",
+                "Ice Core and Quaternary Geochemistry Lab",
+                "Institute for Water and Watersheds",
+                "Linus Pauling Institute",
+                "OH Hinsdale Wave Research Laboratory",
+                "Oregon Agricultural Experiment Station",
+                "Oregon Sea Grant",
+                "PacWave",
+                "Pacific Marine Energy Center",
+                "Radiation Center",
+                "Regional Class Research Vessels",
+                "STEM Research Center",
+                "Superfund Research Center"
+            ],
+            isCheckbox: true
+        },
+        {
+            label: "Would you be willing to share your experience in more detail?",
+            options: ["Yes", "No"],
+            isEmailConditional: true
+        }
+    ];
+
+    let questions = round1Questions;
+
+    /* -------------------------------
+       TRANSITIONS
+    --------------------------------*/
+    function animateOut(callback) {
+        isTransitioning = true;
+        transitionWrapper.classList.add("shrink-out");
+
+        setTimeout(() => {
+            if (callback) callback();
+
+            transitionWrapper.classList.remove("shrink-out");
+            transitionWrapper.classList.add("pre-grow");
+
+            requestAnimationFrame(() => {
+                transitionWrapper.classList.remove("pre-grow");
+                isTransitioning = false;
+            });
+        }, 300);
+    }
+
+    function animateIn() {
+        transitionWrapper.classList.add("pre-grow");
+        requestAnimationFrame(() => {
+            transitionWrapper.classList.remove("pre-grow");
+        });
+    }
+
+    /* -------------------------------
+       BACK BUTTON VISIBILITY
+    --------------------------------*/
+    function updateBackButton() {
+        // If email field is up, hide back button
+        if (!emailFieldWrap.classList.contains("hide")) {
+            backButton.classList.add("hide");
+            return;
+        }
+
+        if (round === 1) {
+            if (qIndex > 0) backButton.classList.remove("hide");
+            else backButton.classList.add("hide");
+            return;
+        }
+
+        if (round === 2) {
+            if (qIndex === 0) backButton.classList.add("hide");
+            else backButton.classList.remove("hide");
+            return;
+        }
+    }
+
+    /* -------------------------------
+       LOAD QUESTION
+    --------------------------------*/
+    function loadQuestion() {
+        animateIn();
+        updateBackButton();
+
+        const q = questions[qIndex];
+        questionLabel.textContent = q.label;
+
+        // Reset UI
+        radioContainer.innerHTML = "";
+        radioContainer.classList.remove("hide", "checkbox-grid");
+        formInner.classList.remove("tall-content");
+        emailFieldWrap.classList.add("hide");
+        emailInput.value = "";
+        emailError.style.display = "none";
+
+        submitButton.classList.add("hide");
+        document.getElementById("glowWrap").classList.add("hide");
+        radioContainer.classList.remove("hide");
+
+        questionInput.value = "";
+        questionInput.placeholder = "";
+
+        // CHECKBOX GRID
+        if (q.isCheckbox) {
+            radioContainer.classList.add("checkbox-grid");
+            formInner.classList.add("tall-content");
+            submitButton.classList.remove("hide");
+
+            q.options.forEach((opt, idx) => {
+                const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
+                const id = `chk-${idx}`;
+
+                const tile = document.createElement("div");
+                tile.className = "checkbox-tile";
+                tile.setAttribute("data-label", opt);
+
+                tile.innerHTML = `
+                    <img src="Assets/${clean}.png" alt="${opt}">
+                    <input type="checkbox" id="${id}" value="${opt}">
+                    <div class="checkbox-checkmark">✓</div>
+                `;
+
+                tile.addEventListener("click", () => {
+                    const input = tile.querySelector("input");
+                    input.checked = !input.checked;
+                    tile.classList.toggle("selected", input.checked);
+                });
+
+                radioContainer.appendChild(tile);
+            });
+
+            return;
+        }
+
+        // RADIO TYPE (round 1 + round 2)
+        if (q.options) {
+            q.options.forEach((opt, idx) => {
+                const clean = opt.toLowerCase().replace(/\//g, "").replace(/,/g, "").replace(/ /g, "-");
+                const id = `rad-${idx}`;
+
+                const wrapper = document.createElement("label");
+                wrapper.innerHTML = `
+                    <div class="glow-wrap radio-glow">
+                        <div class="radio-option">
+                            <span class="radio-bullet"></span>
+                            <img class="radio-icon" src="Assets/${clean}.png" alt="${opt}">
+                            <span class="radio-label-text">${opt}</span>
+                            <input type="radio" name="roundOpt" value="${opt}" id="${id}">
+                        </div>
+                    </div>
+                `;
+
+                wrapper.addEventListener("click", () => {
+                    if (isTransitioning) return;
+
+                    radioContainer.querySelectorAll(".radio-option").forEach(el => {
+                        el.classList.remove("selected");
+                        el.parentElement.classList.remove("glow-active");
+                    });
+
+                    const option = wrapper.querySelector(".radio-option");
+                    const wrap = wrapper.querySelector(".glow-wrap");
+                    const input = wrapper.querySelector("input");
+
+                    option.classList.add("selected");
+                    wrap.classList.add("glow-active");
+                    input.checked = true;
+
+                    // EMAIL CONDITIONAL LOGIC
+                    if (q.isEmailConditional) {
+                        if (input.value === "Yes") {
+                            radioContainer.classList.add("hide");
+                            emailFieldWrap.classList.remove("hide");
+                            updateBackButton();
+                            return; // do NOT auto-advance; wait for email submit
+                        } else {
+                            // "No" path: store a clear "No" and auto-advance
+                            answers.email = "No";
+                        }
+                    }
+
+                    setTimeout(() => {
+                        if (!isTransitioning) {
+                            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+                        }
+                    }, 150);
+                });
+
+                radioContainer.appendChild(wrapper);
+            });
+
+            return;
+        }
+
+        // TEXT QUESTION (if you ever add one)
+        radioContainer.classList.add("hide");
+        document.getElementById("glowWrap").classList.remove("hide");
+        questionInput.placeholder = q.placeholder || "";
+        questionInput.focus();
+    }
+
+    /* -------------------------------
+       BACK BUTTON LOGIC
+    --------------------------------*/
+    backButton.addEventListener("click", () => {
+        if (history.length === 0 || isTransitioning) return;
+
+        const last = history.pop();
+
+        // Move back to that question
+        qIndex = last.qIndex;
+        const q = questions[qIndex];
+
+        animateOut(() => {
+            loadQuestion();
+
+            // Restore UI selection for that question
+            if (q.isCheckbox && Array.isArray(last.value)) {
+                // Re-check checkboxes
+                const checkboxes = radioContainer.querySelectorAll("input[type='checkbox']");
+                checkboxes.forEach(cb => {
+                    if (last.value.includes(cb.value)) {
+                        cb.checked = true;
+                        cb.closest(".checkbox-tile").classList.add("selected");
+                    }
+                });
+            } else if (q.options) {
+                // Radio question restore
+                const radios = radioContainer.querySelectorAll("input[type='radio']");
+                radios.forEach(r => {
+                    if (r.value === last.value) {
+                        r.checked = true;
+                        const option = r.closest(".radio-option");
+                        const wrap = r.closest(".glow-wrap");
+                        if (option) option.classList.add("selected");
+                        if (wrap) wrap.classList.add("glow-active");
+                    }
+                });
+
+                // If it's the email conditional question and value was "Yes",
+                // just show the radios again; email box is only for forward direction.
+                if (q.isEmailConditional) {
+                    emailFieldWrap.classList.add("hide");
+                    radioContainer.classList.remove("hide");
+                }
+            } else {
+                // Text restore
+                questionInput.value = last.value;
+            }
+        });
+    });
+
+    /* -------------------------------
+       FORM SUBMIT (ADVANCE QUESTIONS)
+    --------------------------------*/
+    questionForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const q = questions[qIndex];
+        let value;
+
+        // Checkbox
+        if (q.isCheckbox) {
+            const checkedBoxes = Array.from(
+                radioContainer.querySelectorAll("input[type='checkbox']:checked")
+            ).map(cb => cb.value);
+            value = checkedBoxes;
+        }
+        // Radio
+        else if (q.options) {
+            const selected = radioContainer.querySelector("input[type='radio']:checked");
+            if (!selected) return;
+            value = selected.value;
+        }
+        // Text
+        else {
+            value = questionInput.value.trim();
+            if (!value) return;
+        }
+
+        // Store answers (but NEVER overwrite email from here)
+        if (round === 1) {
+            if (qIndex === 0) answers.role = value;
+            else if (qIndex === 1) answers.experience = value;
+        } else {
+            if (qIndex === 0) answers.brought = value;
+            else if (qIndex === 1) answers.knownResearch = value;
+            // qIndex === 2 is the email conditional question:
+            //   we do NOT set answers.email here (handled by emailSubmitBtn / radio "No")
+        }
+
+        history.push({ qIndex, value });
+
+        const atLastQuestion = (qIndex === questions.length - 1);
+
+        animateOut(() => {
+            if (!atLastQuestion) {
+                qIndex++;
+                loadQuestion();
+            } else {
+                if (round === 1) showWinScreen();
+                else finishedRound2();
+            }
+        });
+    });
+
+    /* -------------------------------
+       EMAIL SUBMIT BUTTON
+       - ONLY place where typed email is saved
+    --------------------------------*/
+emailSubmitBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isValid) {
+        emailError.style.display = "block";
+        emailInput.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        return;
+    }
+
+    emailError.style.display = "none";
+    emailInput.style.boxShadow = "";
+
+    // Correct: Save user typed email
+    answers.email = email;
+
+    // Advance exactly like form submit
+    history.push({ qIndex, value: email });
+
+    animateOut(() => {
+        const atLastQuestion = (qIndex === questions.length - 1);
+
+        if (!atLastQuestion) {
+            qIndex++;
+            loadQuestion();
+        } else {
+            if (round === 1) showWinScreen();
+            else finishedRound2();
+        }
+    });
+});
+
+
+    emailInput.addEventListener("input", () => {
+        emailError.style.display = "none";
+        emailInput.style.boxShadow = "";
+    });
+
+    emailBackBtn.addEventListener("click", () => {
+        // Hide email and return to Yes/No
+        emailFieldWrap.classList.add("hide");
+        radioContainer.classList.remove("hide");
+        emailInput.value = "";
+        emailError.style.display = "none";
+
+        radioContainer.querySelectorAll(".radio-option").forEach(opt => {
+            opt.classList.remove("selected");
+            opt.parentElement.classList.remove("glow-active");
+        });
+
+        updateBackButton();
+    });
+
+    /* -------------------------------
+       WIN SCREEN & ROUND 2
+    --------------------------------*/
+    function showWinScreen() {
+        questionForm.classList.add("hide");
+        youWinBlock.classList.add("show");
+        backButton.classList.add("hide");
+        startConfetti();
+    }
+
+    document.getElementById("goToRound2").addEventListener("click", () => {
+        stopConfetti();
+        youWinBlock.classList.remove("show");
+        questionForm.classList.remove("hide");
+
+        round = 2;
+        questions = round2Questions;
+        qIndex = 0;
+        history = [];
+        backButton.classList.add("hide");
+        loadQuestion();
+    });
+
+document.getElementById("noThanksBtn").addEventListener("click", () => {
+    stopConfetti();
+    youWinBlock.classList.remove("show");
+    questionForm.classList.remove("hide");
+
+    //  SEND ROUND 1 DATA TO HOST
+    if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage({
+            role: answers.role,
+            experience: answers.experience,
+            brought: "",          // Round 2 was skipped
+            knownResearch: "",    // Round 2 was skipped
+            email: ""             // User skipped email
+        });
+    }
+
+    // Give C# time to save before wiping answers
+    setTimeout(() => resetAll(), 50);
+});
+
+
+    function finishedRound2() {
+        backButton.classList.add("hide");
+        questionForm.classList.add("hide");
+        youWinBlock.classList.remove("show");
+        spinnerWheel2.classList.add("show");
+    }
+
+    /* -------------------------------
+       CONFETTI
+    --------------------------------*/
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const cctx = confettiCanvas.getContext("2d");
+    let confettiPieces = [];
+    let confettiActive = false;
+    let confettiStopTimeout = null;
+
+    function resizeConfetti() {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    function createConfettiBurst(originX, originY) {
+        if (!originX || !originY) {
+            originX = window.innerWidth / 2;
+            originY = window.innerHeight * 0.45;
+        }
+
+        const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
+        const total = 550;
+
+        for (let i = 0; i < total; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 60;
+
+            const wobble = Math.random() * Math.PI * 2;
+            const wobbleSpeed = 0.1 + Math.random() * 0.25;
+            const gravity = 0.05 + Math.random() * 0.08;
+            const drag = 0.92 + Math.random() * 0.04;
+
+            confettiPieces.push({
+                x: originX,
+                y: originY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                size: 4 + Math.random() * 10,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.25,
+                wobble,
+                wobbleSpeed,
+                gravity,
+                drag,
+                life: 0,
+                maxLife: 200 + Math.random() * 60
+            });
+        }
+    }
+
+    function startConfetti(x, y) {
+        confettiActive = true;
+        confettiPieces = [];
+        createConfettiBurst(x, y);
+
+        if (confettiStopTimeout) clearTimeout(confettiStopTimeout);
+        confettiStopTimeout = setTimeout(() => {
+            confettiActive = false;
+            confettiStopTimeout = null;
+        }, 2500);
+
+        requestAnimationFrame(updateConfetti);
+    }
+
+    function stopConfetti() {
+        confettiActive = false;
+        confettiPieces = [];
+        cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        if (confettiStopTimeout) {
+            clearTimeout(confettiStopTimeout);
+            confettiStopTimeout = null;
+        }
+    }
+
+    function updateConfetti() {
+        cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+        confettiPieces.forEach(p => {
+            p.vx *= p.drag;
+            p.vy *= p.drag;
+            p.vy += p.gravity;
+
+            p.wobble += p.wobbleSpeed;
+            p.x += p.vx + Math.cos(p.wobble) * 0.8;
+            p.y += p.vy;
+
+            p.rotation += p.rotationSpeed;
+            p.life++;
+        });
+
+        confettiPieces = confettiPieces.filter(p =>
+            p.y < confettiCanvas.height + 200
+        );
+
+        confettiPieces.forEach(p => {
+            cctx.save();
+            cctx.translate(p.x, p.y);
+            cctx.rotate(p.rotation);
+            cctx.fillStyle = p.color;
+            cctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            cctx.restore();
+        });
+
+        if (confettiActive || confettiPieces.length > 0) {
+            requestAnimationFrame(updateConfetti);
+        }
+    }
+
+    /* -------------------------------
+       SPINNER WHEEL 2 + MODAL
+    --------------------------------*/
+    const wheel2 = document.getElementById("wheelElement2");
+    const spinBtn2 = document.getElementById("spinBtn2");
+    let rotation2 = 0;
+    let isSpinning2 = false;
+    let lastPrize = 0;
+
+    function showPrizeModal(prize) {
+        lastPrize = prize;
+        document.getElementById("prizeValue").textContent = prize;
+        document.getElementById("prizeLabel").textContent = `${prize}`;
+        prizeModal.classList.add("active");
+
+        const wheelRect = wheel2.getBoundingClientRect();
+        startConfetti(
+            wheelRect.left + wheelRect.width / 2,
+            wheelRect.top + wheelRect.height / 2
+        );
+    }
+
+    spinBtn2.addEventListener("click", () => {
+        if (isSpinning2) return;
+        isSpinning2 = true;
+        spinBtn2.classList.add("spinning");
+
+        const spins = 5 + Math.floor(Math.random() * 3);
+        const extra = Math.floor(Math.random() * 360);
+        const total = (spins * 360) + extra;
+
+        rotation2 += total;
+        wheel2.style.transform = `rotate(${rotation2}deg)`;
+
+        setTimeout(() => {
+            const normalized = (rotation2 + 106) % 360;
+            const angle = (360 - normalized + 32) % 360;
+            const segment = Math.floor(angle / 72);
+            const prizeIndex = segment % 5;
+
+            const prizes = ["Beach Ball", "Giant Highlighter", "Calendar", "Sticker", "Magnet"];
+            showPrizeModal(prizes[prizeIndex]);
+
+            isSpinning2 = false;
+            spinBtn2.classList.remove("spinning");
+        }, 5000);
+    });
+
+    /* -------------------------------
+       RESET ALL STATE
+    --------------------------------*/
+    function resetAll() {
+        prizeModal.classList.remove("active");
+
+        round = 1;
+        questions = round1Questions;
+        qIndex = 0;
+
+        answers.role = "";
+        answers.experience = "";
+        answers.brought = "";
+        answers.knownResearch = "";
+        answers.email = "";
+
+        emailInput.value = "";
+        emailFieldWrap.classList.add("hide");
+        radioContainer.classList.remove("hide");
+
+        history = [];
+
+        // Reset wheel
+        rotation2 = 0;
+        wheel2.style.transition = "none";
+        wheel2.style.transform = "rotate(0deg)";
+        setTimeout(() => {
+            wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+        }, 50);
+
+        spinnerWheel2.classList.remove("show");
+        youWinBlock.classList.remove("show");
+        questionForm.classList.remove("hide");
+        stopConfetti();
+        loadQuestion();
+    }
+
+    /* -------------------------------
+       MODAL CLOSE → SEND TO HOST
+    --------------------------------*/
+    document.getElementById("closeModal").addEventListener("click", () => {
+        if (window.chrome && window.chrome.webview) {
+const payload = {
+    role: answers.role,
+    experience: answers.experience,
+    brought: answers.brought,
+    knownResearch: Array.isArray(answers.knownResearch)
+        ? answers.knownResearch.join(", ")
+        : answers.knownResearch || "",
+    email: answers.email // do NOT fallback to ""
+};
+
+// Snapshot now — before resetAll wipes values
+window.chrome.webview.postMessage({ ...payload });
+
+        }
+
+// Delay reset so email isn't wiped before being posted
+setTimeout(() => resetAll(), 50);
+
+    });
+
+    /* -------------------------------
+       HOME LOGO CLICK → HARD RESET
+    --------------------------------*/
+    homeLogo.addEventListener("click", () => {
+        prizeModal.classList.remove("active");
+        stopConfetti();
+        resetAll();
+        questionForm.classList.remove("hide");
+        youWinBlock.classList.remove("show");
+        spinnerWheel2.classList.remove("show");
+        window.scrollTo(0, 0);
+    });
+
+    /* -------------------------------
+       INITIAL LOAD
+    --------------------------------*/
+    loadQuestion();
+</script>
+
+</body>
+</html>

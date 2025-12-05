@@ -27,15 +27,12 @@ C:\ASU-Survey\KioskApp\obj\Release\net8.0-windows\win-x64\KioskApp.genruntimecon
 C:\ASU-Survey\KioskApp\obj\Release\net8.0-windows\win-x64\ref\KioskApp.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\faculty.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\government-office.png
-C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\graduate.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\interesting-research.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\logo.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\neutral-no-change-of-impression.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\no.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\other.png
-C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\swag.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\TikTokSans.ttf
-C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\undergraduate.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\yes-much-improved.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\yes-somewhat-improved.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\yes.png
@@ -524,3 +521,5 @@ C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\zh-Hant\UIAutomationPr
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\zh-Hant\UIAutomationTypes.resources.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\zh-Hant\WindowsBase.resources.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\zh-Hant\WindowsFormsIntegration.resources.dll
+C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\interest-in-oregon-state-university.png
+C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\university-faculty.png
