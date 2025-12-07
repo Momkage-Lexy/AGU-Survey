@@ -16,4 +16,11 @@
     </Content>
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Include="wwwroot\**\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+
 </Project>

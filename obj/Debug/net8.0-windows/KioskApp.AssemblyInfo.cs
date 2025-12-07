@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KioskApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7a1ca894f0665aca54bb065441a467b1f2bcafb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5b525ae03779e7794dec3674b471e7d136852d6f")]
 [assembly: System.Reflection.AssemblyProductAttribute("KioskApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KioskApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

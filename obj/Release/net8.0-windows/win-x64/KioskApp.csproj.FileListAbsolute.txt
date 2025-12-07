@@ -291,7 +291,6 @@ C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\createdump.exe
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\hostfxr.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\hostpolicy.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\mscordaccore.dll
-C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\mscordaccore_amd64_amd64_8.0.1224.60305.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\mscordbi.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\mscorrc.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\msquic.dll
@@ -523,3 +522,4 @@ C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\zh-Hant\WindowsBase.re
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\zh-Hant\WindowsFormsIntegration.resources.dll
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\interest-in-oregon-state-university.png
 C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\wwwroot\Assets\university-faculty.png
+C:\ASU-Survey\KioskApp\bin\Release\net8.0-windows\win-x64\mscordaccore_amd64_amd64_8.0.2225.52707.dll

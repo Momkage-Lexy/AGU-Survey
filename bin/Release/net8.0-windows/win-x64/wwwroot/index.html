@@ -1242,7 +1242,7 @@
             });
         });
 
-        questionForm.addEventListener("submit", (e) => {
+questionForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
             const q = questions[qIndex];
@@ -1256,7 +1256,8 @@
                     radioContainer.querySelectorAll("input[type='checkbox']:checked")
                 ).map(cb => cb.value);
 
-                value = checkedBoxes; // store array of answers
+                // Convert array to comma-separated string for storage
+                value = checkedBoxes.join(", ");
             }
 
             // --------------------------
@@ -1283,7 +1284,16 @@
                 else answers.experience = value;
             } else {
                 if (qIndex === 0) answers.brought = value;
-
+                else if (qIndex === 1) answers.knownResearch = value;
+                else if (qIndex === 2) {
+                    // Handle email conditional question
+                    if (value === "No") {
+                        answers.email = "";
+                        answers.name = "";
+                    }
+                    // If "Yes" was selected but we're here, user didn't fill email form
+                    // This shouldn't happen normally, but handle it
+                }
             }
 
             history.push({ qIndex, value });
@@ -1297,48 +1307,56 @@
             }
         });
 
-        document.getElementById("emailSubmitBtn").addEventListener("click", () => {
-            const emailField = document.getElementById("emailInput");
-            const nameField  = document.getElementById("nameInput");
+document.getElementById("emailSubmitBtn").addEventListener("click", () => {
+    const emailField = document.getElementById("emailInput");
+    const nameField  = document.getElementById("nameInput");
 
-            const email = emailField.value.trim();
-            const name  = nameField.value.trim();
+    const email = emailField.value.trim();
+    const name  = nameField.value.trim();
 
-            const emailError = document.getElementById("emailError");
-            const nameError  = document.getElementById("nameError");
+    const emailError = document.getElementById("emailError");
+    const nameError  = document.getElementById("nameError");
 
-            let valid = true;
+    let valid = true;
 
-            // Email validation
-            const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-            if (!emailValid) {
-                emailError.style.display = "block";
-                emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
-                valid = false;
-            } else {
-                emailError.style.display = "none";
-                emailField.style.boxShadow = "";
-            }
+    // Email validation
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailValid) {
+        emailError.style.display = "block";
+        emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        valid = false;
+    } else {
+        emailError.style.display = "none";
+        emailField.style.boxShadow = "";
+    }
 
-            // Name validation
-            if (!name) {
-                nameError.style.display = "block";
-                nameField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
-                valid = false;
-            } else {
-                nameError.style.display = "none";
-                nameField.style.boxShadow = "";
-            }
+    // Name validation
+    if (!name) {
+        nameError.style.display = "block";
+        nameField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        valid = false;
+    } else {
+        nameError.style.display = "none";
+        nameField.style.boxShadow = "";
+    }
 
-            if (!valid) return;
+    if (!valid) return;
 
-            // Save values
-            answers.email = email;
-            answers.name  = name;
+    // Save values BEFORE advancing - THIS IS CRITICAL
+    answers.email = email;
+    answers.name  = name;
 
-            // Submit to advance to next question
-            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-        });
+    // Add to history
+    history.push({ qIndex, value: "Yes (with email)" });
+    qIndex++;
+
+    // Now advance directly without triggering form submit
+    if (qIndex < questions.length) {
+        animateOut(() => loadQuestion());
+    } else {
+        animateOut(finishedRound2);
+    }
+});
 
         document.getElementById("nameInput").addEventListener("input", () => {
             document.getElementById("nameError").style.display = "none";
@@ -1388,7 +1406,7 @@
                                 document.getElementById("emailField").classList.add("hide");
                             }
                         }
-                                    else {
+                        else {
                             // restore text input
                             questionInput.value = last.value;
                         }
@@ -1424,6 +1442,23 @@
             stopConfetti();
             youWinBlock.classList.remove("show");
             questionForm.classList.remove("hide");
+            // Package Round 1 answers even if Round 2 was skipped
+            const dataToSend = {
+                role: String(answers.role || ""),
+                experience: String(answers.experience || ""),
+                brought: "",            // skipped
+                knownResearch: "",      // skipped
+                name: "",               // skipped
+                email: ""
+            };
+
+            // Send to C# backend
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage(dataToSend);
+            }
+
+            // slight delay to ensure message is delivered
+            setTimeout(() => resetAll(), 150);
 
             // FULL RESET
             round = 1;
@@ -1643,54 +1678,78 @@
             }, 5000);
         });
 
-        function resetAll() {
-            document.getElementById("prizeModal").classList.remove("active");
+function resetAll() {
+    document.getElementById("prizeModal").classList.remove("active");
 
-            round = 1;
-            questions = round1Questions;
-            qIndex = 0;
+    round = 1;
+    questions = round1Questions;
+    qIndex = 0;
 
-            answers.role = "";
-            answers.experience = "";
-            answers.brought = "";
-            answers.knownResearch = "";
-            answers.name = "";
-            answers.email = "";
-            document.getElementById("emailInput").value = "";
-            document.getElementById("nameInput").value = "";
-            document.getElementById("emailField").classList.add("hide");
-            radioContainer.classList.remove("hide");
+    // Reset all answers
+    answers.role = "";
+    answers.experience = "";
+    answers.brought = "";
+    answers.knownResearch = "";
+    answers.name = "";
+    answers.email = "";
+    
+    // Clear form fields
+    document.getElementById("emailInput").value = "";
+    document.getElementById("nameInput").value = "";
+    document.getElementById("emailField").classList.add("hide");
+    radioContainer.classList.remove("hide");
 
-            // Reset wheel
-            rotation2 = 0;
-            wheel2.style.transition = "none";
-            wheel2.style.transform = "rotate(0deg)";
-            setTimeout(() => {
-                wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
-            }, 50);
+    // IMPORTANT: Clear history array
+    history = [];
 
-            spinnerWheel2.classList.remove("show");
-            youWinBlock.classList.remove("show");
-            questionForm.classList.remove("hide");
-            stopConfetti();
-            loadQuestion();
-        }
+    // Reset wheel
+    rotation2 = 0;
+    wheel2.style.transition = "none";
+    wheel2.style.transform = "rotate(0deg)";
+    setTimeout(() => {
+        wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+    }, 50);
 
-        document.getElementById("closeModal").addEventListener("click", () => {
-            // Send to host (WebView) if available
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage({
-                    role: answers.role,
-                    experience: answers.experience,
-                    brought: answers.brought,
-                    knownResearch: answers.knownResearch,
-                    name: answers.name,
-                    email: answers.email
-                });
-            }
+    spinnerWheel2.classList.remove("show");
+    youWinBlock.classList.remove("show");
+    questionForm.classList.remove("hide");
+    stopConfetti();
+    loadQuestion();
+}
 
-            resetAll();
-        });
+document.getElementById("closeModal").addEventListener("click", () => {
+    // CRITICAL: Clone the data BEFORE resetting
+    // Create a deep copy so resetAll() doesn't affect it
+    const dataToSend = {
+        role: String(answers.role || ""),
+        experience: String(answers.experience || ""),
+        brought: String(answers.brought || ""),
+        knownResearch: String(answers.knownResearch || ""),
+    };
+
+    const nameInput = document.getElementById("nameInput").value.trim();
+    const emailInput = document.getElementById("emailInput").value.trim();
+
+    // PRIORITIZE REAL INPUT (even if user forgot to hit email submit)
+    dataToSend.name = nameInput || answers.name || "";
+    dataToSend.email = emailInput || answers.email || "";
+
+    // DEBUG: Log what we're sending
+    console.log("=== SENDING DATA ===");
+    console.log("Name:", dataToSend.name);
+    console.log("Email:", dataToSend.email);
+
+    // Send to host (WebView) if available
+    if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage(dataToSend);
+        console.log("Data sent successfully");
+    }
+
+    // Small delay before reset to ensure message is sent
+    setTimeout(() => {
+        resetAll();
+    }, 100);
+});
     </script>
 </body>
 </html>

@@ -278,8 +278,7 @@
             align-items: center;
             font-size: 15px;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+
             position: absolute;
             top: 8px;
             right: 8px;
@@ -306,12 +305,6 @@
         #noThanksBtn, #emailBackBtn{
         background-color: #d3d3d3 !important;
         color: #333 !important;
-        }
-
-        #emailBackBtn{
-            margin: auto;
-            text-align: center;
-            margin-top: 20px;
         }
 
         /* YOU WIN state */
@@ -684,7 +677,7 @@
 
         .buttons-flex{
             display:flex;
-            justify-content: space-between;
+            justify-content: center;
             gap: 20px;
         }
 
@@ -811,28 +804,25 @@
                     <div id="radioContainer" class="radio-group hide"></div>
                     <div id="emailField" class="hide">
                         <div class="email-glow-wrap">
+                            <input type="text" id="nameInput" placeholder="Please enter your name">
+                        </div><br>
+                        <div class="email-glow-wrap"style="margin-top: 20px;">
                             <input type="email" id="emailInput" placeholder="Please enter your email">
                         </div>
 
-                        <button id="emailSubmitBtn" type="button" class="email-button">
-                            <p style="display: flex; align-items: center; gap: 10px; padding: 0;
-                                margin: 0;"><svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 74 74"
-                                height="35"
-                                width="35"
-                            >
-                                <circle stroke-width="3" stroke="white" r="35.5" cy="37" cx="37"></circle>
-                                <path
-                                fill="white"
-                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z"
-                                ></path>
-                            </svg></p>
-                        </button>
-                        <button id="emailBackBtn" type="button" class="button">
-                            <div class="wrap"><p>Back</p></div>
-                        </button>
+                        <div class="buttons-flex" style="margin-top: 20px;">
+                            <button id="emailSubmitBtn" type="button" class="button">
+                                <div class="wrap"><p>Submit</p></div>
+                            </button>
+                            <button id="emailBackBtn" type="button" class="button">
+                                <div class="wrap"><p>Back</p></div>
+                            </button>
+                        </div>
+
+                        <div id="nameError"
+                            style="color:#d73f09; font-size:0.9rem; margin-top:8px; display:none;">
+                            Please enter your name.
+                        </div>
                         <div id="emailError"
                             style="color:#d73f09; font-size:0.9rem; margin-top:8px; display:none;">
                             Please enter a valid email address.
@@ -945,739 +935,821 @@
         people by karina from <a href="https://thenounproject.com/browse/icons/term/people/" target="_blank" title="people Icons">Noun Project</a> (CC BY 3.0)
     </div>
 
-<script>
-    /* -------------------------------
-       ELEMENT REFERENCES
-    --------------------------------*/
-    const questionLabel = document.getElementById("questionLabel");
-    const questionInput = document.getElementById("questionInput");
-    const questionForm = document.getElementById("questionForm");
-    const radioContainer = document.getElementById("radioContainer");
-    const youWinBlock = document.getElementById("youWin");
-    const formInner = document.querySelector(".form-inner");
-    const spinnerWheel2 = document.getElementById("spinnerWheel2");
-    const submitButton = document.getElementById("submitButton");
-    const backButton = document.getElementById("backButton");
-    const transitionWrapper = document.getElementById("transitionWrapper");
-    const emailFieldWrap = document.getElementById("emailField");
-    const emailInput = document.getElementById("emailInput");
-    const emailError = document.getElementById("emailError");
-    const emailSubmitBtn = document.getElementById("emailSubmitBtn");
-    const emailBackBtn = document.getElementById("emailBackBtn");
-    const prizeModal = document.getElementById("prizeModal");
-    const homeLogo = document.getElementById("homeLogo");
+    <script>
 
-    /* -------------------------------
-       SURVEY STATE
-    --------------------------------*/
-    let round = 1;
-    let qIndex = 0;
-    let isTransitioning = false;
+        document.getElementById("homeLogo").addEventListener("click", () => {
+        // Close modal if open
+        document.getElementById("prizeModal").classList.remove("active");
 
-    // answers object is reused between runs but resetAll() clears it
-    const answers = {
-        role: "",
-        experience: "",
-        brought: "",
-        knownResearch: "",
-        email: ""   // ONLY set in emailSubmitBtn or when "No" is chosen
-    };
+        // Stop any confetti
+        stopConfetti();
 
-    let history = []; // for back button
+        // Reset everything
+        resetAll();
 
-    /* -------------------------------
-       QUESTIONS
-    --------------------------------*/
-    const round1Questions = [
-        {
-            label: "Which of the following best describes your role?",
-            options: [
+        // Make absolutely sure UI is showing the form
+        questionForm.classList.remove("hide");
+        youWinBlock.classList.remove("show");
+        spinnerWheel2.classList.remove("show");
+
+        // Optional: scroll to the top if needed
+        window.scrollTo(0, 0);
+    });
+
+        /* -------------------------------
+           QUESTION / ROUND LOGIC
+        --------------------------------*/
+        let round = 1;
+        let isTransitioning = false;
+
+        const round1Questions = [
+            { label: "Which of the following best describes your role?", options:[
                 "OSU Faculty",
+                "University Faculty",
                 "Undergraduate Student",
                 "Graduate Student",
                 "Government Office",
                 "Other"
-            ]
-        },
-        {
-            label: "Did your experience at this booth improve your impression of Oregon State University?",
-            options: [
-                "Neutral, no change of impression",
-                "Yes, somewhat improved",
-                "Yes, much improved"
-            ]
+            ] },
+            {
+                label: "Did your experience at this booth improve your impression of Oregon State University and it’s research?",
+                options: [
+                    "Neutral, no change of impression",
+                    "Yes, somewhat improved",
+                    "Yes, much improved"
+                ]
+            }
+        ];
+
+        const round2Questions = [
+            {
+                label: "What brought you to the booth?",
+                options: [
+                    "Cool Swag",
+                    "Interest in Oregon State University",
+                    "Interest in Researchers",
+                    "Interest in Research Institutes and Centers",
+                    "R/V Taani Simulator"
+                ]
+            },
+
+            {
+                label: "Which OSU research centers and institutes did you know about prior to visiting AGU? Please select all that apply.",
+                options: [
+                    "Advanced Technology and Manufacturing Institute",
+                    "Center for Oldest Ice Exploration",
+                    "Center for Quantitative Life Sciences",
+                    "Collaborative Robotics and Intelligent Systems Institute",
+                    "Cooperative Institute for Marine Ecosystem and Resources Studies",                
+                    "Food Innovation Center",
+                    "Hatfield Marine Science Center",
+                    "Ice Core and Quaternary Geochemistry Lab",
+                    "Institute for Water and Watersheds",
+                    "Linus Pauling Institute",
+                    "OH Hinsdale Wave Research Laboratory",
+                    "Oregon Agricultural Experiment Station",
+                    "Oregon Sea Grant",
+                    "PacWave",
+                    "Pacific Marine Energy Center",
+                    "Radiation Center",
+                    "Regional Class Research Vessels",
+                    "STEM Research Center",
+                    "Superfund Research Center"
+                ],
+                isCheckbox: true
+            },
+
+            {
+                label: "Would you be willing to share your experience in more detail after the conference?",
+                options: ["Yes", "No"],
+                isEmailConditional: true
+            },
+        ];
+
+        let questions = round1Questions;
+        let qIndex = 0;
+
+        const answers = { role: "", experience: "", brought: "", knownResearch: "", name: "", email: "" };
+        let lastPrize = 0;
+
+        const questionLabel = document.getElementById("questionLabel");
+        const questionInput = document.getElementById("questionInput");
+        const questionForm = document.getElementById("questionForm");
+        const radioContainer = document.getElementById("radioContainer");
+        const youWinBlock = document.getElementById("youWin");
+        const formInner = document.querySelector(".form-inner");
+        const spinnerWheel2 = document.getElementById("spinnerWheel2");
+        const submitButton = document.getElementById("submitButton");
+        let history = [];
+        const backButton = document.getElementById("backButton");
+
+        const transitionWrapper = document.getElementById("transitionWrapper");
+
+        function animateOut(callback) {
+            isTransitioning = true;
+
+            transitionWrapper.classList.add("shrink-out");
+
+            setTimeout(() => {
+                if (callback) callback();
+
+                transitionWrapper.classList.remove("shrink-out");
+
+                transitionWrapper.classList.add("pre-grow");
+                requestAnimationFrame(() => {
+                    transitionWrapper.classList.remove("pre-grow");
+                    isTransitioning = false;   
+                });
+            }, 300);
         }
-    ];
 
-    const round2Questions = [
-        {
-            label: "What brought you to the booth?",
-            options: [
-                "Cool Swag",
-                "Interest in Researchers",
-                "Interest in Research Institutes and Centers",
-                "R/V Taani Simulator"
-            ]
-        },
-        {
-            label: "Which OSU research centers and institutes did you know about prior to visiting AGU? Please select all that apply.",
-            options: [
-                "Advanced Technology and Manufacturing Institute",
-                "Center for Oldest Ice Exploration",
-                "Center for Quantitative Life Sciences",
-                "Collaborative Robotics and Intelligent Systems Institute",
-                "Cooperative Institute for Marine Ecosystem and Resources Studies",                
-                "Food Innovation Center",
-                "Hatfield Marine Science Center",
-                "Ice Core and Quaternary Geochemistry Lab",
-                "Institute for Water and Watersheds",
-                "Linus Pauling Institute",
-                "OH Hinsdale Wave Research Laboratory",
-                "Oregon Agricultural Experiment Station",
-                "Oregon Sea Grant",
-                "PacWave",
-                "Pacific Marine Energy Center",
-                "Radiation Center",
-                "Regional Class Research Vessels",
-                "STEM Research Center",
-                "Superfund Research Center"
-            ],
-            isCheckbox: true
-        },
-        {
-            label: "Would you be willing to share your experience in more detail?",
-            options: ["Yes", "No"],
-            isEmailConditional: true
-        }
-    ];
-
-    let questions = round1Questions;
-
-    /* -------------------------------
-       TRANSITIONS
-    --------------------------------*/
-    function animateOut(callback) {
-        isTransitioning = true;
-        transitionWrapper.classList.add("shrink-out");
-
-        setTimeout(() => {
-            if (callback) callback();
-
-            transitionWrapper.classList.remove("shrink-out");
+        function animateIn() {
             transitionWrapper.classList.add("pre-grow");
 
             requestAnimationFrame(() => {
                 transitionWrapper.classList.remove("pre-grow");
-                isTransitioning = false;
             });
-        }, 300);
-    }
-
-    function animateIn() {
-        transitionWrapper.classList.add("pre-grow");
-        requestAnimationFrame(() => {
-            transitionWrapper.classList.remove("pre-grow");
-        });
-    }
-
-    /* -------------------------------
-       BACK BUTTON VISIBILITY
-    --------------------------------*/
-    function updateBackButton() {
-        // If email field is up, hide back button
-        if (!emailFieldWrap.classList.contains("hide")) {
-            backButton.classList.add("hide");
-            return;
         }
 
-        if (round === 1) {
-            if (qIndex > 0) backButton.classList.remove("hide");
-            else backButton.classList.add("hide");
-            return;
+        // ------------------------------
+        // BACK BUTTON LOGIC
+        // ------------------------------
+        function updateBackButton() {
+
+            // Email screen NEVER shows back button
+            if (!document.getElementById("emailField").classList.contains("hide")) {
+                backButton.classList.add("hide");
+                return;
+            }
+
+            // Round 1 logic
+            if (round === 1) {
+                if (qIndex > 0) backButton.classList.remove("hide");
+                else backButton.classList.add("hide");
+                return;
+            }
+
+            // Round 2 logic
+            if (round === 2) {
+                if (qIndex === 0) backButton.classList.add("hide");  // First question of round 2
+                else backButton.classList.remove("hide");
+                return;
+            }
         }
 
-        if (round === 2) {
-            if (qIndex === 0) backButton.classList.add("hide");
-            else backButton.classList.remove("hide");
-            return;
-        }
-    }
+        function loadQuestion() {
+            animateIn();
+            updateBackButton();
+            const q = questions[qIndex];
+            questionLabel.textContent = q.label;
 
-    /* -------------------------------
-       LOAD QUESTION
-    --------------------------------*/
-    function loadQuestion() {
-        animateIn();
-        updateBackButton();
+            // Reset UI
+            radioContainer.innerHTML = "";
+            radioContainer.classList.remove("hide");
+            radioContainer.classList.remove("checkbox-grid");
+            formInner.classList.remove("tall-content");
+            document.getElementById("emailField").classList.add("hide");
+            document.getElementById("nameInput").value = "";
+            document.getElementById("emailInput").value = "";
+            // Always hide elements by default
+            submitButton.classList.add("hide");
+            document.getElementById("glowWrap").classList.add("hide");
+            document.getElementById("emailField").classList.add("hide");
+            radioContainer.classList.remove("hide");
 
-        const q = questions[qIndex];
-        questionLabel.textContent = q.label;
+            questionInput.value = "";
+            questionInput.placeholder = "";
 
-        // Reset UI
-        radioContainer.innerHTML = "";
-        radioContainer.classList.remove("hide", "checkbox-grid");
-        formInner.classList.remove("tall-content");
-        emailFieldWrap.classList.add("hide");
-        emailInput.value = "";
-        emailError.style.display = "none";
+            /* -----------------------------------
+            CHECKBOX QUESTION (grid tiles)
+            ----------------------------------- */
+            if (q.isCheckbox) {
+                radioContainer.classList.add("checkbox-grid");
+                formInner.classList.add("tall-content");
+                submitButton.classList.remove("hide"); // checkboxes NEED a submit button
+                q.options.forEach((opt, idx) => {
+                    const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
+                    const id = `chk-${idx}`;
 
-        submitButton.classList.add("hide");
-        document.getElementById("glowWrap").classList.add("hide");
-        radioContainer.classList.remove("hide");
+                    const tile = document.createElement("div");
+                    tile.className = "checkbox-tile";
+                    tile.setAttribute("data-label", opt);
 
-        questionInput.value = "";
-        questionInput.placeholder = "";
+                    tile.innerHTML = `
+                        <img src="Assets/${clean}.png" alt="${opt}">
+                        <input type="checkbox" id="${id}" value="${opt}">
+                        <div class="checkbox-checkmark">✓</div>
+                    `;
 
-        // CHECKBOX GRID
-        if (q.isCheckbox) {
-            radioContainer.classList.add("checkbox-grid");
-            formInner.classList.add("tall-content");
-            submitButton.classList.remove("hide");
-
-            q.options.forEach((opt, idx) => {
-                const clean = opt.toLowerCase().replace(/,/g, "").replace(/ /g, "-");
-                const id = `chk-${idx}`;
-
-                const tile = document.createElement("div");
-                tile.className = "checkbox-tile";
-                tile.setAttribute("data-label", opt);
-
-                tile.innerHTML = `
-                    <img src="Assets/${clean}.png" alt="${opt}">
-                    <input type="checkbox" id="${id}" value="${opt}">
-                    <div class="checkbox-checkmark">✓</div>
-                `;
-
-                tile.addEventListener("click", () => {
-                    const input = tile.querySelector("input");
-                    input.checked = !input.checked;
-                    tile.classList.toggle("selected", input.checked);
-                });
-
-                radioContainer.appendChild(tile);
-            });
-
-            return;
-        }
-
-        // RADIO TYPE (round 1 + round 2)
-        if (q.options) {
-            q.options.forEach((opt, idx) => {
-                const clean = opt.toLowerCase().replace(/\//g, "").replace(/,/g, "").replace(/ /g, "-");
-                const id = `rad-${idx}`;
-
-                const wrapper = document.createElement("label");
-                wrapper.innerHTML = `
-                    <div class="glow-wrap radio-glow">
-                        <div class="radio-option">
-                            <span class="radio-bullet"></span>
-                            <img class="radio-icon" src="Assets/${clean}.png" alt="${opt}">
-                            <span class="radio-label-text">${opt}</span>
-                            <input type="radio" name="roundOpt" value="${opt}" id="${id}">
-                        </div>
-                    </div>
-                `;
-
-                wrapper.addEventListener("click", () => {
-                    if (isTransitioning) return;
-
-                    radioContainer.querySelectorAll(".radio-option").forEach(el => {
-                        el.classList.remove("selected");
-                        el.parentElement.classList.remove("glow-active");
+                    tile.addEventListener("click", () => {
+                        const input = tile.querySelector("input");
+                        input.checked = !input.checked;
+                        tile.classList.toggle("selected", input.checked);
                     });
 
-                    const option = wrapper.querySelector(".radio-option");
-                    const wrap = wrapper.querySelector(".glow-wrap");
-                    const input = wrapper.querySelector("input");
-
-                    option.classList.add("selected");
-                    wrap.classList.add("glow-active");
-                    input.checked = true;
-
-                    // EMAIL CONDITIONAL LOGIC
-                    if (q.isEmailConditional) {
-                        if (input.value === "Yes") {
-                            radioContainer.classList.add("hide");
-                            emailFieldWrap.classList.remove("hide");
-                            updateBackButton();
-                            return; // do NOT auto-advance; wait for email submit
-                        } else {
-                            // "No" path: store a clear "No" and auto-advance
-                            answers.email = "No";
-                        }
-                    }
-
-                    setTimeout(() => {
-                        if (!isTransitioning) {
-                            questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
-                        }
-                    }, 150);
+                    radioContainer.appendChild(tile);
                 });
 
-                radioContainer.appendChild(wrapper);
-            });
+                return; // ⬅ We're done for checkbox questions
+            }
 
-            return;
+            /* -----------------------------------
+            RADIO QUESTION (Round 1 + Round 2)
+            ----------------------------------- */
+            if (q.options) {
+                q.options.forEach((opt, idx) => {
+                    const clean = opt.toLowerCase().replace(/\//g, "").replace(/,/g, "").replace(/ /g, "-");
+                    const id = `rad-${idx}`;
+                    submitButton.classList.add("hide"); // radios never show the submit button
+
+                    const wrapper = document.createElement("label");
+                    wrapper.innerHTML = `
+                        <div class="glow-wrap radio-glow">
+                            <div class="radio-option">
+                                <span class="radio-bullet"></span>
+                                <img class="radio-icon" src="Assets/${clean}.png" alt="${opt}">
+                                <span class="radio-label-text">${opt}</span>
+                                <input type="radio" name="roundOpt" value="${opt}" id="${id}">
+                            </div>
+                        </div>
+                    `;
+
+                    wrapper.addEventListener("click", () => {
+                        if (isTransitioning) return;
+
+                        radioContainer.querySelectorAll(".radio-option").forEach(el => {
+                            el.classList.remove("selected");
+                            el.parentElement.classList.remove("glow-active");
+                        });
+
+                        const option = wrapper.querySelector(".radio-option");
+                        const wrap = wrapper.querySelector(".glow-wrap");
+                        const input = wrapper.querySelector("input");
+
+                        option.classList.add("selected");
+                        wrap.classList.add("glow-active");
+                        input.checked = true;
+
+                        // Email conditional question logic
+                        if (q.isEmailConditional) {
+                            if (input.value === "Yes") {
+                                radioContainer.classList.add("hide");
+                                document.getElementById("emailField").classList.remove("hide");
+                                return;
+                            } else {
+                                document.getElementById("emailField").classList.add("hide");
+                            }
+                        }
+
+                        // Autosubmit after slight delay
+                        setTimeout(() => {
+                            if (!isTransitioning) {
+                                questionForm.dispatchEvent(new Event("submit", { cancelable: true }));
+                            }
+                        }, 150);
+                    });
+
+                    radioContainer.appendChild(wrapper);
+                });
+
+                return; // ⬅ Done for radio-type questions
+            }
+
+            /* -----------------------------------
+            TEXT INPUT QUESTION
+            ----------------------------------- */
+            radioContainer.classList.add("hide");
+            document.getElementById("glowWrap").classList.remove("hide");
+            questionInput.placeholder = q.placeholder || "";
+            questionInput.focus();
         }
 
-        // TEXT QUESTION (if you ever add one)
-        radioContainer.classList.add("hide");
-        document.getElementById("glowWrap").classList.remove("hide");
-        questionInput.placeholder = q.placeholder || "";
-        questionInput.focus();
+        document.getElementById("emailBackBtn").addEventListener("click", () => {
+            // Hide email field
+            document.getElementById("emailField").classList.add("hide");
+
+            // Show Yes/No options again
+            radioContainer.classList.remove("hide");
+
+            // Clear email
+            document.getElementById("emailInput").value = "";
+            document.getElementById("nameInput").value = "";
+
+            // Re-select NOTHING (force user to choose again)
+            radioContainer.querySelectorAll(".radio-option").forEach(opt => {
+                opt.classList.remove("selected");
+                opt.parentElement.classList.remove("glow-active");
+            });
+        });
+
+questionForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const q = questions[qIndex];
+            let value;
+
+            // --------------------------
+            // CHECKBOX QUESTION
+            // --------------------------
+            if (q.isCheckbox) {
+                const checkedBoxes = Array.from(
+                    radioContainer.querySelectorAll("input[type='checkbox']:checked")
+                ).map(cb => cb.value);
+
+                // Convert array to comma-separated string for storage
+                value = checkedBoxes.join(", ");
+            }
+
+            // --------------------------
+            // RADIO QUESTION
+            // --------------------------
+            else if (q.options) {
+                const selected = radioContainer.querySelector("input[type='radio']:checked");
+                if (!selected) return;
+
+                value = selected.value;
+            }
+
+            // --------------------------
+            // TEXT QUESTION
+            // --------------------------
+            else {
+                value = questionInput.value.trim();
+                if (!value) return;
+            }
+
+            // Store answers
+            if (round === 1) {
+                if (qIndex === 0) answers.role = value;
+                else answers.experience = value;
+            } else {
+                if (qIndex === 0) answers.brought = value;
+                else if (qIndex === 1) answers.knownResearch = value;
+                else if (qIndex === 2) {
+                    // Handle email conditional question
+                    if (value === "No") {
+                        answers.email = "";
+                        answers.name = "";
+                    }
+                    // If "Yes" was selected but we're here, user didn't fill email form
+                    // This shouldn't happen normally, but handle it
+                }
+            }
+
+            history.push({ qIndex, value });
+            qIndex++;
+
+            if (qIndex < questions.length) {
+                animateOut(() => loadQuestion());
+            } else {
+                if (round === 1) animateOut(showWinScreen);
+                else animateOut(finishedRound2);
+            }
+        });
+
+document.getElementById("emailSubmitBtn").addEventListener("click", () => {
+    const emailField = document.getElementById("emailInput");
+    const nameField  = document.getElementById("nameInput");
+
+    const email = emailField.value.trim();
+    const name  = nameField.value.trim();
+
+    const emailError = document.getElementById("emailError");
+    const nameError  = document.getElementById("nameError");
+
+    let valid = true;
+
+    // Email validation
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailValid) {
+        emailError.style.display = "block";
+        emailField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        valid = false;
+    } else {
+        emailError.style.display = "none";
+        emailField.style.boxShadow = "";
     }
 
-    /* -------------------------------
-       BACK BUTTON LOGIC
-    --------------------------------*/
-    backButton.addEventListener("click", () => {
-        if (history.length === 0 || isTransitioning) return;
+    // Name validation
+    if (!name) {
+        nameError.style.display = "block";
+        nameField.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
+        valid = false;
+    } else {
+        nameError.style.display = "none";
+        nameField.style.boxShadow = "";
+    }
 
-        const last = history.pop();
+    if (!valid) return;
 
-        // Move back to that question
-        qIndex = last.qIndex;
-        const q = questions[qIndex];
+    // Save values BEFORE advancing - THIS IS CRITICAL
+    answers.email = email;
+    answers.name  = name;
 
-        animateOut(() => {
+    // Add to history
+    history.push({ qIndex, value: "Yes (with email)" });
+    qIndex++;
+
+    // Now advance directly without triggering form submit
+    if (qIndex < questions.length) {
+        animateOut(() => loadQuestion());
+    } else {
+        animateOut(finishedRound2);
+    }
+});
+
+        document.getElementById("nameInput").addEventListener("input", () => {
+            document.getElementById("nameError").style.display = "none";
+            document.getElementById("nameInput").style.boxShadow = "";
+        });
+
+        document.getElementById("emailInput").addEventListener("input", () => {
+            document.getElementById("emailError").style.display = "none";
+            document.getElementById("emailInput").style.boxShadow = "";
+        });
+
+            
+        document.getElementById("backButton").addEventListener("click", () => {
+            if (history.length === 0) return; // can't go back
+
+            // Retrieve last answer
+            const last = history.pop();
+
+            // Move qIndex back
+            qIndex = last.qIndex;
+
+            // Load the question again
             loadQuestion();
 
-            // Restore UI selection for that question
-            if (q.isCheckbox && Array.isArray(last.value)) {
-                // Re-check checkboxes
-                const checkboxes = radioContainer.querySelectorAll("input[type='checkbox']");
-                checkboxes.forEach(cb => {
-                    if (last.value.includes(cb.value)) {
-                        cb.checked = true;
-                        cb.closest(".checkbox-tile").classList.add("selected");
-                    }
-                });
-            } else if (q.options) {
-                // Radio question restore
+            // Restore the previous answer
+            const q = questions[qIndex];
+
+            if (q.options) {
                 const radios = radioContainer.querySelectorAll("input[type='radio']");
+
                 radios.forEach(r => {
                     if (r.value === last.value) {
                         r.checked = true;
+
                         const option = r.closest(".radio-option");
                         const wrap = r.closest(".glow-wrap");
                         if (option) option.classList.add("selected");
                         if (wrap) wrap.classList.add("glow-active");
+
+                        // SPECIAL CASE: Email conditional question
+                        if (q.isEmailConditional) {
+                            if (last.value === "Yes") {
+                                radioContainer.classList.remove("hide");
+                                document.getElementById("emailField").classList.add("hide");
+                            } else {
+                                radioContainer.classList.remove("hide");
+                                document.getElementById("emailField").classList.add("hide");
+                            }
+                        }
+                        else {
+                            // restore text input
+                            questionInput.value = last.value;
+                        }
                     }
                 });
-
-                // If it's the email conditional question and value was "Yes",
-                // just show the radios again; email box is only for forward direction.
-                if (q.isEmailConditional) {
-                    emailFieldWrap.classList.add("hide");
-                    radioContainer.classList.remove("hide");
-                }
-            } else {
-                // Text restore
-                questionInput.value = last.value;
             }
         });
-    });
 
-    /* -------------------------------
-       FORM SUBMIT (ADVANCE QUESTIONS)
-    --------------------------------*/
-    questionForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const q = questions[qIndex];
-        let value;
+        function showWinScreen() {
+            // Hide the form, show YOU WIN
+            questionForm.classList.add("hide");
+            youWinBlock.classList.add("show");
+            backButton.classList.add("hide");
 
-        // Checkbox
-        if (q.isCheckbox) {
-            const checkedBoxes = Array.from(
-                radioContainer.querySelectorAll("input[type='checkbox']:checked")
-            ).map(cb => cb.value);
-            value = checkedBoxes;
-        }
-        // Radio
-        else if (q.options) {
-            const selected = radioContainer.querySelector("input[type='radio']:checked");
-            if (!selected) return;
-            value = selected.value;
-        }
-        // Text
-        else {
-            value = questionInput.value.trim();
-            if (!value) return;
+            startConfetti();
         }
 
-        // Store answers (but NEVER overwrite email from here)
-        if (round === 1) {
-            if (qIndex === 0) answers.role = value;
-            else if (qIndex === 1) answers.experience = value;
-        } else {
-            if (qIndex === 0) answers.brought = value;
-            else if (qIndex === 1) answers.knownResearch = value;
-            // qIndex === 2 is the email conditional question:
-            //   we do NOT set answers.email here (handled by emailSubmitBtn / radio "No")
-        }
+        document.getElementById("goToRound2").addEventListener("click", () => {
+            // Move into Round 2
+            stopConfetti();
+            youWinBlock.classList.remove("show");
+            questionForm.classList.remove("hide");
 
-        history.push({ qIndex, value });
-
-        const atLastQuestion = (qIndex === questions.length - 1);
-
-        animateOut(() => {
-            if (!atLastQuestion) {
-                qIndex++;
-                loadQuestion();
-            } else {
-                if (round === 1) showWinScreen();
-                else finishedRound2();
-            }
-        });
-    });
-
-    /* -------------------------------
-       EMAIL SUBMIT BUTTON
-       - ONLY place where typed email is saved
-    --------------------------------*/
-emailSubmitBtn.addEventListener("click", () => {
-    const email = emailInput.value.trim();
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-    if (!isValid) {
-        emailError.style.display = "block";
-        emailInput.style.boxShadow = "0 0 0 3px rgba(215,63,9,0.4)";
-        return;
-    }
-
-    emailError.style.display = "none";
-    emailInput.style.boxShadow = "";
-
-    // Correct: Save user typed email
-    answers.email = email;
-
-    // Advance exactly like form submit
-    history.push({ qIndex, value: email });
-
-    animateOut(() => {
-        const atLastQuestion = (qIndex === questions.length - 1);
-
-        if (!atLastQuestion) {
-            qIndex++;
+            round = 2;
+            questions = round2Questions;
+            qIndex = 0;
+            backButton.classList.add("hide");
+            history = [];
             loadQuestion();
-        } else {
-            if (round === 1) showWinScreen();
-            else finishedRound2();
-        }
-    });
-});
-
-
-    emailInput.addEventListener("input", () => {
-        emailError.style.display = "none";
-        emailInput.style.boxShadow = "";
-    });
-
-    emailBackBtn.addEventListener("click", () => {
-        // Hide email and return to Yes/No
-        emailFieldWrap.classList.add("hide");
-        radioContainer.classList.remove("hide");
-        emailInput.value = "";
-        emailError.style.display = "none";
-
-        radioContainer.querySelectorAll(".radio-option").forEach(opt => {
-            opt.classList.remove("selected");
-            opt.parentElement.classList.remove("glow-active");
         });
 
-        updateBackButton();
-    });
+        document.getElementById("noThanksBtn").addEventListener("click", () => {
+            stopConfetti();
+            youWinBlock.classList.remove("show");
+            questionForm.classList.remove("hide");
+            // Package Round 1 answers even if Round 2 was skipped
+            const dataToSend = {
+                role: String(answers.role || ""),
+                experience: String(answers.experience || ""),
+                brought: "",            // skipped
+                knownResearch: "",      // skipped
+                name: "",               // skipped
+                email: ""
+            };
 
-    /* -------------------------------
-       WIN SCREEN & ROUND 2
-    --------------------------------*/
-    function showWinScreen() {
-        questionForm.classList.add("hide");
-        youWinBlock.classList.add("show");
-        backButton.classList.add("hide");
-        startConfetti();
-    }
+            // Send to C# backend
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage(dataToSend);
+            }
 
-    document.getElementById("goToRound2").addEventListener("click", () => {
-        stopConfetti();
-        youWinBlock.classList.remove("show");
-        questionForm.classList.remove("hide");
+            // slight delay to ensure message is delivered
+            setTimeout(() => resetAll(), 150);
 
-        round = 2;
-        questions = round2Questions;
-        qIndex = 0;
-        history = [];
-        backButton.classList.add("hide");
+            // FULL RESET
+            round = 1;
+            questions = round1Questions;
+            qIndex = 0;
+
+            answers.role = "";
+            answers.experience = "";
+            answers.brought = "";
+            answers.knownResearch = "";
+            answers.name = "";
+            answers.email = "";
+
+            history = [];
+
+            // Reset wheel visuals
+            rotation2 = 0;
+            wheel2.style.transition = "none";
+            wheel2.style.transform = "rotate(0deg)";
+            setTimeout(() => {
+                wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+            }, 50);
+
+            spinnerWheel2.classList.remove("show");
+
+            loadQuestion();
+        });
+
+        function finishedRound2() {
+            // Hide form UI, show spinner wheel 2
+            backButton.classList.add("hide");
+            questionForm.classList.add("hide");
+            youWinBlock.classList.remove("show");
+            spinnerWheel2.classList.add("show");
+        }
+
         loadQuestion();
-    });
 
-document.getElementById("noThanksBtn").addEventListener("click", () => {
-    stopConfetti();
-    youWinBlock.classList.remove("show");
-    questionForm.classList.remove("hide");
+        /* -------------------------------
+           CONFETTI
+        --------------------------------*/
+        const confettiCanvas = document.getElementById("confettiCanvas");
+        const cctx = confettiCanvas.getContext("2d");
+        let confettiPieces = [];
+        let confettiActive = false;
+        let confettiStopTimeout = null;
 
-    //  SEND ROUND 1 DATA TO HOST
-    if (window.chrome && window.chrome.webview) {
-        window.chrome.webview.postMessage({
-            role: answers.role,
-            experience: answers.experience,
-            brought: "",          // Round 2 was skipped
-            knownResearch: "",    // Round 2 was skipped
-            email: ""             // User skipped email
-        });
-    }
+        function resizeConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeConfetti);
+        resizeConfetti();
 
-    // Give C# time to save before wiping answers
-    setTimeout(() => resetAll(), 50);
-});
+        function createConfettiBurst(originX, originY) {
+            if (!originX || !originY) {
+                originX = window.innerWidth / 2;
+                originY = window.innerHeight * 0.45;
+            }
+
+            const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
+            const total = 550;
+
+            for (let i = 0; i < total; i++) {
+                // VERY wide cone for chaotic look
+                // 360° confetti spread — full explosion
+                const angle = Math.random() * Math.PI * 2;
 
 
-    function finishedRound2() {
-        backButton.classList.add("hide");
-        questionForm.classList.add("hide");
-        youWinBlock.classList.remove("show");
-        spinnerWheel2.classList.add("show");
-    }
+                // More variation in speed
+                const speed = 2 + Math.random() * 60;
 
-    /* -------------------------------
-       CONFETTI
-    --------------------------------*/
-    const confettiCanvas = document.getElementById("confettiCanvas");
-    const cctx = confettiCanvas.getContext("2d");
-    let confettiPieces = [];
-    let confettiActive = false;
-    let confettiStopTimeout = null;
+                // New randomness properties
+                const wobble = Math.random() * Math.PI * 2;
+                const wobbleSpeed = 0.1 + Math.random() * 0.25;  // each piece wobbles differently
+                const gravity = 0.05 + Math.random() * 0.08;      // each piece falls differently
+                const drag = 0.92 + Math.random() * 0.04;         // some slow down faster
 
-    function resizeConfetti() {
-        confettiCanvas.width = window.innerWidth;
-        confettiCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeConfetti);
-    resizeConfetti();
+                confettiPieces.push({
+                    x: originX,
+                    y: originY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 4 + Math.random() * 10,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * Math.PI * 2,
+                    rotationSpeed: (Math.random() - 0.5) * 0.25,
 
-    function createConfettiBurst(originX, originY) {
-        if (!originX || !originY) {
-            originX = window.innerWidth / 2;
-            originY = window.innerHeight * 0.45;
+                    // new chaotic motion properties
+                    wobble,
+                    wobbleSpeed,
+                    gravity,
+                    drag,
+
+                    life: 0,
+                    maxLife: 200 + Math.random() * 60
+                });
+            }
         }
 
-        const colors = ["#d73f09", "#ff8a00", "#f7a162", "#4A773C", "#003B5C"];
-        const total = 550;
+        function startConfetti(x, y) {
+            confettiActive = true;
+            confettiPieces = [];
+            createConfettiBurst(x, y);
 
-        for (let i = 0; i < total; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 2 + Math.random() * 60;
+            if (confettiStopTimeout) clearTimeout(confettiStopTimeout);
+            confettiStopTimeout = setTimeout(() => {
+                confettiActive = false;
+                confettiStopTimeout = null;
+            }, 2500);
 
-            const wobble = Math.random() * Math.PI * 2;
-            const wobbleSpeed = 0.1 + Math.random() * 0.25;
-            const gravity = 0.05 + Math.random() * 0.08;
-            const drag = 0.92 + Math.random() * 0.04;
-
-            confettiPieces.push({
-                x: originX,
-                y: originY,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                size: 4 + Math.random() * 10,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                rotation: Math.random() * Math.PI * 2,
-                rotationSpeed: (Math.random() - 0.5) * 0.25,
-                wobble,
-                wobbleSpeed,
-                gravity,
-                drag,
-                life: 0,
-                maxLife: 200 + Math.random() * 60
-            });
-        }
-    }
-
-    function startConfetti(x, y) {
-        confettiActive = true;
-        confettiPieces = [];
-        createConfettiBurst(x, y);
-
-        if (confettiStopTimeout) clearTimeout(confettiStopTimeout);
-        confettiStopTimeout = setTimeout(() => {
-            confettiActive = false;
-            confettiStopTimeout = null;
-        }, 2500);
-
-        requestAnimationFrame(updateConfetti);
-    }
-
-    function stopConfetti() {
-        confettiActive = false;
-        confettiPieces = [];
-        cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-        if (confettiStopTimeout) {
-            clearTimeout(confettiStopTimeout);
-            confettiStopTimeout = null;
-        }
-    }
-
-    function updateConfetti() {
-        cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
-        confettiPieces.forEach(p => {
-            p.vx *= p.drag;
-            p.vy *= p.drag;
-            p.vy += p.gravity;
-
-            p.wobble += p.wobbleSpeed;
-            p.x += p.vx + Math.cos(p.wobble) * 0.8;
-            p.y += p.vy;
-
-            p.rotation += p.rotationSpeed;
-            p.life++;
-        });
-
-        confettiPieces = confettiPieces.filter(p =>
-            p.y < confettiCanvas.height + 200
-        );
-
-        confettiPieces.forEach(p => {
-            cctx.save();
-            cctx.translate(p.x, p.y);
-            cctx.rotate(p.rotation);
-            cctx.fillStyle = p.color;
-            cctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-            cctx.restore();
-        });
-
-        if (confettiActive || confettiPieces.length > 0) {
             requestAnimationFrame(updateConfetti);
         }
-    }
 
-    /* -------------------------------
-       SPINNER WHEEL 2 + MODAL
-    --------------------------------*/
-    const wheel2 = document.getElementById("wheelElement2");
-    const spinBtn2 = document.getElementById("spinBtn2");
-    let rotation2 = 0;
-    let isSpinning2 = false;
-    let lastPrize = 0;
-
-    function showPrizeModal(prize) {
-        lastPrize = prize;
-        document.getElementById("prizeValue").textContent = prize;
-        document.getElementById("prizeLabel").textContent = `${prize}`;
-        prizeModal.classList.add("active");
-
-        const wheelRect = wheel2.getBoundingClientRect();
-        startConfetti(
-            wheelRect.left + wheelRect.width / 2,
-            wheelRect.top + wheelRect.height / 2
-        );
-    }
-
-    spinBtn2.addEventListener("click", () => {
-        if (isSpinning2) return;
-        isSpinning2 = true;
-        spinBtn2.classList.add("spinning");
-
-        const spins = 5 + Math.floor(Math.random() * 3);
-        const extra = Math.floor(Math.random() * 360);
-        const total = (spins * 360) + extra;
-
-        rotation2 += total;
-        wheel2.style.transform = `rotate(${rotation2}deg)`;
-
-        setTimeout(() => {
-            const normalized = (rotation2 + 106) % 360;
-            const angle = (360 - normalized + 32) % 360;
-            const segment = Math.floor(angle / 72);
-            const prizeIndex = segment % 5;
-
-            const prizes = ["Beach Ball", "Giant Highlighter", "Calendar", "Sticker", "Magnet"];
-            showPrizeModal(prizes[prizeIndex]);
-
-            isSpinning2 = false;
-            spinBtn2.classList.remove("spinning");
-        }, 5000);
-    });
-
-    /* -------------------------------
-       RESET ALL STATE
-    --------------------------------*/
-    function resetAll() {
-        prizeModal.classList.remove("active");
-
-        round = 1;
-        questions = round1Questions;
-        qIndex = 0;
-
-        answers.role = "";
-        answers.experience = "";
-        answers.brought = "";
-        answers.knownResearch = "";
-        answers.email = "";
-
-        emailInput.value = "";
-        emailFieldWrap.classList.add("hide");
-        radioContainer.classList.remove("hide");
-
-        history = [];
-
-        // Reset wheel
-        rotation2 = 0;
-        wheel2.style.transition = "none";
-        wheel2.style.transform = "rotate(0deg)";
-        setTimeout(() => {
-            wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
-        }, 50);
-
-        spinnerWheel2.classList.remove("show");
-        youWinBlock.classList.remove("show");
-        questionForm.classList.remove("hide");
-        stopConfetti();
-        loadQuestion();
-    }
-
-    /* -------------------------------
-       MODAL CLOSE → SEND TO HOST
-    --------------------------------*/
-    document.getElementById("closeModal").addEventListener("click", () => {
-        if (window.chrome && window.chrome.webview) {
-const payload = {
-    role: answers.role,
-    experience: answers.experience,
-    brought: answers.brought,
-    knownResearch: Array.isArray(answers.knownResearch)
-        ? answers.knownResearch.join(", ")
-        : answers.knownResearch || "",
-    email: answers.email // do NOT fallback to ""
-};
-
-// Snapshot now — before resetAll wipes values
-window.chrome.webview.postMessage({ ...payload });
-
+        function stopConfetti() {
+            confettiActive = false;
+            confettiPieces = [];
+            cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            if (confettiStopTimeout) {
+                clearTimeout(confettiStopTimeout);
+                confettiStopTimeout = null;
+            }
         }
 
-// Delay reset so email isn't wiped before being posted
-setTimeout(() => resetAll(), 50);
+        function updateConfetti() {
+            cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
 
-    });
+            confettiPieces.forEach(p => {
+                // Apply drag randomness
+                p.vx *= p.drag;
+                p.vy *= p.drag;
 
-    /* -------------------------------
-       HOME LOGO CLICK → HARD RESET
-    --------------------------------*/
-    homeLogo.addEventListener("click", () => {
-        prizeModal.classList.remove("active");
-        stopConfetti();
-        resetAll();
-        questionForm.classList.remove("hide");
-        youWinBlock.classList.remove("show");
-        spinnerWheel2.classList.remove("show");
-        window.scrollTo(0, 0);
-    });
+                // Apply gravity (each piece has different gravity)
+                p.vy += p.gravity;
 
-    /* -------------------------------
-       INITIAL LOAD
-    --------------------------------*/
+                // Wobble left/right so pieces flutter randomly
+                p.wobble += p.wobbleSpeed;
+                p.x += p.vx + Math.cos(p.wobble) * 0.8;
+                p.y += p.vy;
+
+                // Rotation chaos
+                p.rotation += p.rotationSpeed;
+
+                p.rotation += p.rotationSpeed;
+                p.life++;
+
+            });
+
+            confettiPieces = confettiPieces.filter(p =>
+                p.y < confettiCanvas.height + 200
+            );
+
+            confettiPieces.forEach(p => {
+                cctx.save();
+                cctx.translate(p.x, p.y);
+                cctx.rotate(p.rotation);
+                cctx.fillStyle = p.color;
+                cctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                cctx.restore();
+            });
+
+            if (confettiActive || confettiPieces.length > 0) {
+                requestAnimationFrame(updateConfetti);
+            }
+        }
+
+        /* -------------------------------
+           SPINNER WHEEL 2 + MODAL
+        --------------------------------*/
+        const wheel2 = document.getElementById("wheelElement2");
+        const spinBtn2 = document.getElementById("spinBtn2");
+        let rotation2 = 0;
+        let isSpinning2 = false;
+
+        function showPrizeModal(prize) {
+            lastPrize = prize;
+            document.getElementById("prizeValue").textContent = prize;
+            document.getElementById("prizeLabel").textContent = `${prize}`;
+            document.getElementById("prizeModal").classList.add("active");
+
+            // burst from wheel center
+            const wheelRect = wheel2.getBoundingClientRect();
+            startConfetti(
+                wheelRect.left + wheelRect.width / 2,
+                wheelRect.top + wheelRect.height / 2
+            );
+        }
+
+        spinBtn2.addEventListener("click", () => {
+            if (isSpinning2) return;
+            isSpinning2 = true;
+            spinBtn2.classList.add("spinning");
+
+            const spins = 5 + Math.floor(Math.random() * 3);
+            const extra = Math.floor(Math.random() * 360);
+            const total = (spins * 360) + extra;
+
+            rotation2 += total;
+            wheel2.style.transform = `rotate(${rotation2}deg)`;
+
+            setTimeout(() => {
+
+            const normalized = (rotation2 + 106) % 360;
+
+            const angle = (360 - normalized + 32) % 360;
+
+            const segment = Math.floor(angle / 72);
+            const prizeIndex = segment % 5;
+             // 0–4
+
+                const prizes = ["Beach Ball", "Giant Highlighter", "Calendar", "Sticker", "Magnet"];
+                showPrizeModal(prizes[prizeIndex]);
+
+
+                isSpinning2 = false;
+                spinBtn2.classList.remove("spinning");
+            }, 5000);
+        });
+
+function resetAll() {
+    document.getElementById("prizeModal").classList.remove("active");
+
+    round = 1;
+    questions = round1Questions;
+    qIndex = 0;
+
+    // Reset all answers
+    answers.role = "";
+    answers.experience = "";
+    answers.brought = "";
+    answers.knownResearch = "";
+    answers.name = "";
+    answers.email = "";
+    
+    // Clear form fields
+    document.getElementById("emailInput").value = "";
+    document.getElementById("nameInput").value = "";
+    document.getElementById("emailField").classList.add("hide");
+    radioContainer.classList.remove("hide");
+
+    // IMPORTANT: Clear history array
+    history = [];
+
+    // Reset wheel
+    rotation2 = 0;
+    wheel2.style.transition = "none";
+    wheel2.style.transform = "rotate(0deg)";
+    setTimeout(() => {
+        wheel2.style.transition = "transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)";
+    }, 50);
+
+    spinnerWheel2.classList.remove("show");
+    youWinBlock.classList.remove("show");
+    questionForm.classList.remove("hide");
+    stopConfetti();
     loadQuestion();
-</script>
+}
 
+document.getElementById("closeModal").addEventListener("click", () => {
+    // CRITICAL: Clone the data BEFORE resetting
+    // Create a deep copy so resetAll() doesn't affect it
+    const dataToSend = {
+        role: String(answers.role || ""),
+        experience: String(answers.experience || ""),
+        brought: String(answers.brought || ""),
+        knownResearch: String(answers.knownResearch || ""),
+    };
+
+    const nameInput = document.getElementById("nameInput").value.trim();
+    const emailInput = document.getElementById("emailInput").value.trim();
+
+    // PRIORITIZE REAL INPUT (even if user forgot to hit email submit)
+    dataToSend.name = nameInput || answers.name || "";
+    dataToSend.email = emailInput || answers.email || "";
+
+    // DEBUG: Log what we're sending
+    console.log("=== SENDING DATA ===");
+    console.log("Name:", dataToSend.name);
+    console.log("Email:", dataToSend.email);
+
+    // Send to host (WebView) if available
+    if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage(dataToSend);
+        console.log("Data sent successfully");
+    }
+
+    // Small delay before reset to ensure message is sent
+    setTimeout(() => {
+        resetAll();
+    }, 100);
+});
+    </script>
 </body>
 </html>

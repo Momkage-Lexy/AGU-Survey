@@ -49,7 +49,8 @@ namespace KioskApp
                     brought TEXT,
                     knownResearch TEXT,
                     name TEXT,
-                    email TEXT
+                    email TEXT,
+                    timestamp TEXT DEFAULT CURRENT_TIMESTAMP
                 );
             ";
 
@@ -57,11 +58,24 @@ namespace KioskApp
         }
 
         /* ================================
-           WEBVIEW2 INITIALIZATION
+           WEBVIEW2 INITIALIZATION (FIXED)
         =================================*/
         private async void InitializeAsync()
         {
-            await webView21.EnsureCoreWebView2Async(null);
+            // This is the FIX — WebView2 must use a writable folder, NOT Program Files
+            string userDataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "KioskApp_WebView2"
+            );
+
+            Directory.CreateDirectory(userDataFolder);
+
+            var env = await CoreWebView2Environment.CreateAsync(
+                browserExecutableFolder: null,
+                userDataFolder: userDataFolder
+            );
+
+            await webView21.EnsureCoreWebView2Async(env);
 
             string rootPath = Path.Combine(Application.StartupPath, "wwwroot");
 
@@ -73,12 +87,11 @@ namespace KioskApp
 
             webView21.CoreWebView2.WebMessageReceived += CoreWebView2_WebMessageReceived;
 
-            webView21.CoreWebView2.Navigate("https://app.local/index.html");
+            webView21.CoreWebView2.Navigate($"https://app.local/index.html?v={DateTime.Now.Ticks}");
         }
 
         /* ================================
            FIXED MESSAGE HANDLING
-           Solves email-not-saving bug
         =================================*/
         private void CoreWebView2_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
@@ -88,12 +101,10 @@ namespace KioskApp
             {
                 SurveyResult data = null;
 
-                // CASE 1: Normal JSON object
                 if (raw.StartsWith("{"))
                 {
                     data = JsonSerializer.Deserialize<SurveyResult>(raw);
                 }
-                // CASE 2: WebView double-encoded JSON string (happens after first run)
                 else if (raw.StartsWith("\""))
                 {
                     string unwrapped = JsonSerializer.Deserialize<string>(raw);
