@@ -15,14 +15,14 @@ namespace KioskApp
         {
             InitializeComponent();
 
-string sharedDir = Path.Combine(
-    Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments),
-    "KioskApp");
+            string sharedDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments),
+                "KioskApp");
 
-Directory.CreateDirectory(sharedDir);
+            Directory.CreateDirectory(sharedDir);
 
-dbPath = Path.Combine(sharedDir, "survey.db");
-csvPath = Path.Combine(sharedDir, "survey_export.csv");
+            dbPath = Path.Combine(sharedDir, "survey.db");
+            csvPath = Path.Combine(sharedDir, "survey_export.csv");
 
             this.FormBorderStyle = FormBorderStyle.None;
             this.WindowState = FormWindowState.Maximized;
@@ -50,13 +50,13 @@ csvPath = Path.Combine(sharedDir, "survey_export.csv");
             cmd.CommandText = @"
                 CREATE TABLE IF NOT EXISTS responses (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp TEXT,
                     role TEXT,
                     experience TEXT,
                     brought TEXT,
                     knownResearch TEXT,
                     name TEXT,
-                    email TEXT,
-                    timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+                    email TEXT
                 );
             ";
 
@@ -141,10 +141,11 @@ csvPath = Path.Combine(sharedDir, "survey_export.csv");
 
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"
-                INSERT INTO responses (role, experience, brought, knownResearch, name, email)
-                VALUES ($r, $x, $b, $k, $n, $e)
+                INSERT INTO responses (timestamp, role, experience, brought, knownResearch, name, email)
+                VALUES ($ts, $r, $x, $b, $k, $n, $e)
             ";
 
+            cmd.Parameters.AddWithValue("$ts", DateTime.Now.ToString("o"));
             cmd.Parameters.AddWithValue("$r", r.role ?? "");
             cmd.Parameters.AddWithValue("$x", r.experience ?? "");
             cmd.Parameters.AddWithValue("$b", r.brought ?? "");
@@ -178,11 +179,11 @@ csvPath = Path.Combine(sharedDir, "survey_export.csv");
             conn.Open();
 
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT role, experience, brought, knownResearch, name, email FROM responses";
+            cmd.CommandText = "SELECT timestamp, role, experience, brought, knownResearch, name, email FROM responses";
 
             using (var sw = new StreamWriter(tempPath, false))
             {
-                sw.WriteLine("Role,Experience,What brought you to this booth?,Known OSU research centers and institutes,Name,Email");
+                sw.WriteLine("Timestamp,Role,Experience,What brought you to this booth?,Known OSU research centers and institutes,Name,Email");
 
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -193,7 +194,8 @@ csvPath = Path.Combine(sharedDir, "survey_export.csv");
                         $"{Escape(reader.GetString(2))}," +
                         $"{Escape(reader.GetString(3))}," +
                         $"{Escape(reader.GetString(4))}," +
-                        $"{Escape(reader.GetString(5))}"
+                        $"{Escape(reader.GetString(5))}," +
+                        $"{Escape(reader.GetString(6))}"
                     );
                 }
             }
